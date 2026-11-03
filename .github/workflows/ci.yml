@@ -419,7 +419,17 @@ jobs:
             --cov=headroom --cov-branch \
             --cov-report=xml:coverage-${{ matrix.shard }}.xml \
             --cov-report= \
+            --store-durations --durations-path=.test_durations.${{ matrix.shard }} \
+            --durations=40 \
             --tb=short -q
+
+      - name: Upload durations shard (fork-only)
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: durations-${{ matrix.shard }}
+          path: .test_durations.${{ matrix.shard }}
+          include-hidden-files: true
 
       - name: Upload coverage shard ${{ matrix.shard }} to Codecov
         # A shard with a failing test still writes its report; skipping the
